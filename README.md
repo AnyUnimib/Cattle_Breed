@@ -3,6 +3,7 @@
 Bachelor's thesis project — Department of Computer Science & Engineering, Premier University Chittagong.
 
 **Authors:** Any Das · Imtiaz Alam Chowdhury · Shahnaz Siddika
+
 **Supervisor:** Md. Neamul Haque, Lecturer
 
 ---

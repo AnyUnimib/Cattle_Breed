@@ -68,18 +68,18 @@ Five cattle breeds are covered:
 ## 🛠️ Tech Stack
 
 - **Language:** Python
-- **Environment:** Google Colab (Windows 10)
+- **Environment:** Google Colab (TPU runtime)
 - **Libraries:** TensorFlow, Keras, scikit-learn, OpenCV, NumPy, Matplotlib, Seaborn, PIL, mlxtend
 - **Pretrained model:** VGG16 (ImageNet weights) — used as a feature extractor for KNN and Random Forest
 
 ## 🧪 Methodology
 
-**1. Preprocessing** — images resized to 180×180, batch size 12, pixel values normalized to [0, 1], 70/30 train-test split.
+**1. Preprocessing** — images resized to 180×180, batch size 12, pixel values normalized to [0, 1], split 70/30 into 3,518 training / 1,507 test images.
 
 **2. Data augmentation (CNN only)** — random horizontal flip, random rotation, and random zoom, applied as Keras preprocessing layers to expand and balance the dataset.
 
 **3. Per-model approach:**
-- **CNN** — a custom sequential architecture (3× Conv2D + MaxPooling blocks → dense layers), trained end-to-end on the images; first without augmentation, then retrained with the augmentation layers for 15 epochs using the Adam optimizer and sparse categorical cross-entropy loss.
+- **CNN** — a custom sequential architecture (3× Conv2D + MaxPooling blocks → dense layers), trained end-to-end on the images, using the Adam optimizer and sparse categorical cross-entropy loss. Two versions were trained from scratch: a baseline (10 epochs, no augmentation) and a second version with the augmentation layers built in (15 epochs) — the augmented version is the one reported in the results below.
 - **SVM** — a linear-kernel SVM trained on flattened, normalized pixel vectors.
 - **Decision Tree** — scikit-learn's `DecisionTreeClassifier`, also trained on flattened, normalized pixel vectors.
 - **KNN (k=5)** and **Random Forest (100 trees)** — instead of raw pixels, both were trained on deep features extracted from a VGG16 network pretrained on ImageNet (using the `block5_pool` layer as a fixed feature extractor).
@@ -113,7 +113,7 @@ Five cattle breeds are covered:
 
 ```
 ├── Cattle_Breed_Classification.pdf                 # Thesis defense slides
-├── Cattle_Breed_Classification_Report.pdf          # Detailed thesis report
+├── Cattle_Breed_Classification_Report.pdf          # Full thesis report
 ├── CattleBreed_Classification(1).ipynb             # Full implementation (preprocessing, training, evaluation)
 └── README.md
 ```
@@ -135,4 +135,5 @@ Five cattle breeds are covered:
 13. javatpoint — K-Nearest Neighbor (KNN) Algorithm for Machine Learning.
 14. Towards Data Science — Machine learning basics with the K-nearest neighbors algorithm, Sep. 2018.
 15. Built In — Random Forest: A Complete Guide for Machine Learning, Jul. 2021.
+
 

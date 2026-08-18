@@ -10,11 +10,11 @@ Bachelor's thesis project — Department of Computer Science & Engineering, Prem
 
 ## 📌 Overview
 
-This project detects and classifies cattle breeds from images using both classical machine learning and deep learning approaches. It was built to help automate a task that is traditionally done manually by farmers and livestock experts — supporting more efficient and accurate livestock management in agriculture.
+Cattle breeding is a major part of Bangladesh's agricultural economy, but breed identification is traditionally done manually. This project builds an automated system that detects and classifies cattle breed from images, comparing one deep learning approach (CNN) against four classical machine learning approaches (SVM, Decision Tree, KNN, Random Forest) on a self-collected dataset of 5,025 images across five breeds — aiming to give farmers and researchers a fast, accurate breed-ID tool.
 
 Five cattle breeds are covered:
 
-| Breed | 
+| Breed |
 |---|
 | Holstein Friesian |
 | Black Angus |
@@ -24,7 +24,9 @@ Five cattle breeds are covered:
 
 ## 🎯 Objective
 
-To contribute to advancements in agricultural technology by providing efficient and accurate tools for cattle breed classification — aiding farmers and researchers in optimizing livestock practices.
+- Predict the breed of a real-world cattle image using the trained models
+- Run a comparative analysis across models, highlighting their respective strengths and weaknesses
+- Contribute to agricultural technology by providing efficient, accurate breed-classification tools for farmers and researchers
 
 ## 💡 Motivation
 
@@ -38,6 +40,10 @@ To contribute to advancements in agricultural technology by providing efficient 
 - Decision support for livestock management
 
 ## 📂 Dataset
+
+**Collection:** Images were gathered first-hand over ~20–25 days of on-site photography (digital cameras and smartphones) across dairy farms (Iqbal Agro, Saara Agro, Asian Agro, A.U.R Agro Farm, Green Harvest Agro, Bhuiyan Agro), cow huts and cattle markets (Bibirhat, 1 Kilometer, Chowdhury Hut, Shagorika, Ilias Brothers Hut, Qurbani Hut, Moijjartek Gorur Bazar), and open streets/fields — to capture real-world variation in setting and lighting.
+
+**Cleaning & labeling:** ~10,000 images were initially collected; after filtering out unclear or ambiguous samples, 5,025 images remained. Each was manually labeled by breed, and PhotoRoom (an AI photo-editing tool) was used for spot-fixing — removing stray objects like extra cow legs bleeding in from neighboring animals.
 
 **Original dataset:** 2,050 images across 5 breeds
 
@@ -64,31 +70,33 @@ To contribute to advancements in agricultural technology by providing efficient 
 - **Language:** Python
 - **Environment:** Google Colab (Windows 10)
 - **Libraries:** TensorFlow, Keras, scikit-learn, OpenCV, NumPy, Matplotlib, Seaborn, PIL, mlxtend
+- **Pretrained model:** VGG16 (ImageNet weights) — used as a feature extractor for KNN and Random Forest
 
 ## 🧪 Methodology
 
-**1. Image preprocessing** — all images resized to 300×300.
+**1. Preprocessing** — images resized to 180×180, batch size 12, pixel values normalized to [0, 1], 70/30 train-test split.
 
-**2. Data augmentation** — rescale, rotation, shift, shear, flip, and zoom, used to balance and expand the dataset.
+**2. Data augmentation (CNN only)** — random horizontal flip, random rotation, and random zoom, applied as Keras preprocessing layers to expand and balance the dataset.
 
-**3. Models trained and compared:**
-- Convolutional Neural Network (CNN)
-- Support Vector Machine (SVM)
-- Decision Tree
-- K-Nearest Neighbors (KNN)
-- Random Forest
+**3. Per-model approach:**
+- **CNN** — a custom sequential architecture (3× Conv2D + MaxPooling blocks → dense layers), trained end-to-end on the images; first without augmentation, then retrained with the augmentation layers for 15 epochs using the Adam optimizer and sparse categorical cross-entropy loss.
+- **SVM** — a linear-kernel SVM trained on flattened, normalized pixel vectors.
+- **Decision Tree** — scikit-learn's `DecisionTreeClassifier`, also trained on flattened, normalized pixel vectors.
+- **KNN (k=5)** and **Random Forest (100 trees)** — instead of raw pixels, both were trained on deep features extracted from a VGG16 network pretrained on ImageNet (using the `block5_pool` layer as a fixed feature extractor).
 
 ## 📊 Results
 
 | Model | Precision | Recall | F1-score | Accuracy |
 |---|---|---|---|---|
-| Random Forest | 0.9810 | 0.9808 | 0.9807 | **98%** |
-| SVM | 0.9731 | 0.9728 | 0.9728 | 97% |
+| Random Forest | 0.9810 | 0.9808 | 0.9807 | **98.41%** |
+| SVM | 0.9731 | 0.9728 | 0.9728 | 97.28% |
 | CNN | 0.9675 | 0.9677 | 0.9672 | 97% |
 | Decision Tree | 0.9517 | 0.9516 | 0.9513 | 95% |
 | KNN | 0.9095 | 0.9084 | 0.9083 | 91% |
 
 **Random Forest was the best-performing model overall**, with CNN and SVM close behind. Full confusion matrices, classification reports, and ROC-AUC curves for every model are included in the notebook.
+
+**How this compares to prior work:** related studies on cattle breed classification reported accuracies around 85–92% (e.g., an SVM-based approach reaching 85% on an 8,000-image dataset). Using a larger, more diverse, and augmented dataset, this project's SVM reached 97.28% and Random Forest reached 98.41%.
 
 ## ⚠️ Limitations
 
@@ -105,13 +113,26 @@ To contribute to advancements in agricultural technology by providing efficient 
 
 ```
 ├── Cattle_Breed_Classification.pdf                 # Thesis defense slides
-├── Cattle_Breed_Classification_Report.pdf          # Detailed project report
+├── Cattle_Breed_Classification_Report.pdf          # Detailed thesis report
 ├── CattleBreed_Classification(1).ipynb             # Full implementation (preprocessing, training, evaluation)
 └── README.md
 ```
 
 ## 📚 References
 
-1. R. Kasarda et al., "Classification of cattle breeds based on the random forest approach," *Livestock Science*, vol. 267, 2023.
-2. S. Li et al., "Individual dairy cow identification based on lightweight convolutional neural network," *PLOS ONE*, vol. 16, no. 11, 2021.
-3. M.E. Hossain et al., "A systematic review of machine learning techniques for cattle identification: Datasets, methods and Future Directions," *Artificial Intelligence in Agriculture*, vol. 6, 2022.
+1. Briggs, H.M. & D.M. Briggs. *Modern Breeds of Livestock*. Fourth Edition. Macmillan Publishing Co., 1980.
+2. "Breeds of Livestock – Bengali Cattle." Department of Animal and Food Sciences, Oklahoma State University.
+3. Afroz, M. A., Hoque, M. A., and Bhuiyan, A. K. F. H. (2011). Estimation of heritability for growth traits of Red Chittagong cattle in a nucleus herd. *Bangladesh Veterinarian*, 28, 39–46.
+4. Patel N, Upadhyay S. Study of various decision tree pruning methods with their empirical comparison in WEKA. *Int J Comp Appl*, 60(12):20–25.
+5. "Buy upgraded Philippine native cattle for sale," Alpha Agventure Farms, Oct. 2023.
+6. Roysfarm.com — Sahiwal cattle breed profile.
+7. GeeksforGeeks — Convolutional Neural Network (CNN) in Machine Learning, Dec. 2020.
+8. GeeksforGeeks — Support Vector Machine (SVM) Algorithm, Jan. 2021.
+9. ResearchGate — General architecture of a support vector machine (SVM) model.
+10. Towards Data Science — An exhaustive guide to Decision Tree classification in Python 3.X, Oct. 2021.
+11. javatpoint — Decision Tree Algorithm in Machine Learning.
+12. Section.io Engineering Education — Introduction to Random Forest in Machine Learning.
+13. javatpoint — K-Nearest Neighbor (KNN) Algorithm for Machine Learning.
+14. Towards Data Science — Machine learning basics with the K-nearest neighbors algorithm, Sep. 2018.
+15. Built In — Random Forest: A Complete Guide for Machine Learning, Jul. 2021.
+
